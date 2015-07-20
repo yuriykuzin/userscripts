@@ -18,6 +18,7 @@ loadAndExecute("//rawgit.com/Marak/faker.js/master/build/build/faker.min.js", fu
     if (event.altKey && event.keyCode === 174) {
       document.querySelector('[ng-model="userData.firstName"]').value = faker.name.firstName();
       document.querySelector('[ng-model="userData.lastName"]').value = faker.name.lastName();
+      angular.element(document).scope().$apply();
     }
   }, false);
 });
