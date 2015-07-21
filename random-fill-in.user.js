@@ -4,7 +4,9 @@
 // @version      0.1
 // @description  For quick testing to fill in the form data
 // @author       Stepan Suvorov <stevermeister@gmail.com>
+// @match        http://*.studytube.dev/*
 // @match        https://*.studytube-staging.nl/*
+// @match        https://*.studytube.nl/*
 // @grant        none
 // @require     https://rawgit.com/Marak/faker.js/master/build/build/faker.min.js
 // ==/UserScript==
@@ -16,9 +18,14 @@ loadAndExecute("//rawgit.com/Marak/faker.js/master/build/build/faker.min.js", fu
 
   document.addEventListener('keypress', function (event) {
     if (event.altKey && event.keyCode === 174) {
-      document.querySelector('[ng-model="userData.firstName"]').value = faker.name.firstName();
-      document.querySelector('[ng-model="userData.lastName"]').value = faker.name.lastName();
-      angular.element(document).scope().$apply();
+      var app = angular.element('[ng-controller="SignupController"]').scope(),
+        userData = app.userData;
+      userData.firstName = faker.name.firstName();
+      userData.lastName = faker.name.lastName();
+      var emailName = faker.internet.email().split('@')[0];
+      userData.email = userData.password = emailName + '@dispostable.com';
+      app.$apply();
+      window.open('http://www.dispostable.com/inbox/' + emailName + '/', '_blank');
     }
   }, false);
 });
