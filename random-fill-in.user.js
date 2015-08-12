@@ -18,7 +18,7 @@ loadAndExecute("//rawgit.com/Marak/faker.js/master/build/build/faker.min.js", fu
   var emailName = '';
   document.addEventListener('keypress', function (event) {
     if (event.altKey && event.keyCode === 174) {
-      var app = angular.element('[ng-controller="SignupController"]').scope(),
+      var app = angular.element('ui-view:last').scope(),
         userData = app.userData;
       userData.firstName = faker.name.firstName();
       userData.lastName = faker.name.lastName();
