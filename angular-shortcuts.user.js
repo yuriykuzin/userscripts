@@ -6,7 +6,6 @@
 // @author       Stepan Suvorov <stevermeister@gmail.com>
 // @match        *://*/*
 // @grant        none
-// @run-at	     document-start
 // ==/UserScript==
 
 if(document.querySelector('[src*="angular"]')) {
