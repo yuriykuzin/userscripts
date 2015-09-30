@@ -36,5 +36,10 @@ function init() {
     w.$scope = function(element) {
       return w.angular.element(element).scope();
     };
+    w.checkDigest = function() {
+      console.time('$digest');
+      $rootScope.$digest();
+      console.timeEnd('$digest');
+    };
   }
 }
