@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Angulary - make console make angular friendly
+// @name         Angulary - make console angular-friendly for developer
 // @namespace    angulary
 // @version      0.1
 // @description  to make console make angular friendly with shortcuts like $injector(), $getService('name'), $rootScope, $getService(element)
