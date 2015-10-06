@@ -28,7 +28,7 @@ function init() {
     }, 500);
 
   function initAngulary(el) {
-    w.$reload = w.angular.reloadWithDebugInfo;
+    //w.$reload = w.angular.reloadWithDebugInfo;
     w.$app = w.angular.element(el);
     w.$injector = w.$app.injector();
     w.$get = w.$injector.get;
