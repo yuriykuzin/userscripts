@@ -16,18 +16,18 @@ function init() {
   var w = typeof unsafeWindow == 'undefined' ? window : unsafeWindow,
     tryNumber = 20,
     initWatcher = setInterval(function() {
-      var appElement = w.document.querySelector('.ng-scope');
-      if (appElement || tryNumber) {
+      if (w.angular || tryNumber) {
         clearInterval(initWatcher);
 
-        if (appElement) {
-          initAngulary(appElement);
+        if (w.angular) {
+          initAngulary();
         }
       }
       tryNumber--;
     }, 500);
 
-  function initAngulary(el) {
+  function initAngulary() {
+    var el = w.document.querySelector('.ng-scope');
     //w.$reload = w.angular.reloadWithDebugInfo;
     w.$app = w.angular.element(el);
     w.$injector = w.$app.injector();
