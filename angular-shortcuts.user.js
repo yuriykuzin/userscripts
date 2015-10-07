@@ -16,7 +16,7 @@ function init() {
   var w = typeof unsafeWindow == 'undefined' ? window : unsafeWindow,
     tryNumber = 20,
     initWatcher = setInterval(function() {
-      if (w.angular || tryNumber) {
+      if (w.angular || !tryNumber) {
         clearInterval(initWatcher);
 
         if (w.angular) {
