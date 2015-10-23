@@ -2,7 +2,7 @@
 // @name         Angulary - make console angular-friendly for developer
 // @namespace    angulary
 // @version      0.2
-// @description  to make console make angular friendly with shortcuts like $injector(), $getService('name'), $rootScope, $getService(element)
+// @description  to make console more angular friendly with shortcuts like $injector(), $getService('name'), $rootScope, $getService(element)
 // @author       Stepan Suvorov <stevermeister@gmail.com>
 // @match        *://*/*
 // @grant        none
