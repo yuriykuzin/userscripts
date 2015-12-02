@@ -3,22 +3,28 @@
 // @namespace   jira-agile
 // @description Add avatar of assigned person to Work View
 // @include     https://*.atlassian.net/secure/RapidBoard.jspa*
-// @version     1.0.18
+// @version     1.0.19
 // @author      Stepan Suvorov <stevermeister@gmail.com>
 // ==/UserScript==
 
 (function() {
   var script = function() {
-    var componentsColors = {
-      'Academy': 2,
-      'Admin': 7,
-      'Authoring Tool': 6,
-      'Backend': 5,
-      'Expert': 9,
-      'Law': 3,
-      'LnD': 8,
-      'Player': 4
-    };
+    function getColor(component) {
+      function hashCode(s){
+        return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
+      }
+ 
+      function intToRGB(i){
+        var c = (i & 0x00FFFFFF)
+          .toString(16)
+          .toUpperCase();
+
+        return "00000".substring(0, 6 - c.length) + c;
+      }
+
+      // magic cool gamma constant
+      return '#' + intToRGB(hashCode(component) * 232 + 1000);
+    }
 
     //setAvatars();
 
@@ -47,7 +53,7 @@
             issue.components.forEach(function(component) {
               $('div[data-issue-key="' + issue.key + '"] .ghx-end.ghx-row').prepend(
                 $('<span class="aui-label own-label ghx-label ghx-label-single" />')
-                  .addClass('ghx-label-' + componentsColors[component])
+                  .css({ 'backgroundColor': getColor(component), 'borderColor': 'rgba(0,0,0,0.2)', 'color': '#fff' })
                   .text(component)
               );
             });
