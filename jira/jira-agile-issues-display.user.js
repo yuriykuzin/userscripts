@@ -23,7 +23,7 @@
       }
 
       // magic cool gamma constant
-      return '#' + intToRGB(hashCode(component) + 2369);
+      return '#' + intToRGB(hashCode(component) * 232 + 1000);
     }
 
     //setAvatars();
