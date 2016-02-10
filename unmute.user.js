@@ -8,9 +8,20 @@
 // @grant        none
 // ==/UserScript==
 
-setTimeout(function(){
-	var el = document.querySelector('.ha-w-P-y-Xi-f').parentNode;
-	el.dispatchEvent(new MouseEvent('mousedown'));
-	el.dispatchEvent(new MouseEvent('mouseup'));
-	el.dispatchEvent(new MouseEvent('mouseout'));
-}, 500);
+
+doTry();
+
+function doTry() {
+     if(document.querySelector('.Ha-ha-Sb-b') && document.querySelector('.Ha-ha-Sb-b').getAttribute('aria-pressed') === 'true'){
+         setTimeout(unMute, 1000);
+     } else {
+        setTimeout(doTry, 1000);
+     }
+}
+
+function unMute(){
+    var el = document.querySelector('.ha-w-P-y-Xi-f').parentNode;
+    el.dispatchEvent(new MouseEvent('mousedown'));
+    el.dispatchEvent(new MouseEvent('mouseup'));
+    el.dispatchEvent(new MouseEvent('mouseout'));
+}
