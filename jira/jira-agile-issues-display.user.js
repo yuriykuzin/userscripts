@@ -28,9 +28,9 @@
 
     //setAvatars();
 
-    jQuery('#work-toggle').click(function() {
-      //setAvatars();
-    });
+    setTimeout(function() {
+      setAvatars();
+    }, 1000);
 
     function getData() {
       return jQuery.get('/rest/greenhopper/1.0/xboard/work/allData.json?rapidViewId=3');
