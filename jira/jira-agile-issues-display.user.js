@@ -30,7 +30,7 @@
 
     setTimeout(function() {
       setAvatars();
-    }, 1000);
+    }, 2000);
 
     function getData() {
       return jQuery.get('/rest/greenhopper/1.0/xboard/work/allData.json?rapidViewId=3');
