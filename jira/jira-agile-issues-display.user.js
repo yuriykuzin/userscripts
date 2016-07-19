@@ -71,7 +71,7 @@
     }, 10);
 
     function setAvatars(){
-/*      jQuery(function($) {
+      jQuery(function($) {
         getData().then(function(data) {
           var avatars = data.issuesData.issues.map(function(el) {
             return {
@@ -88,7 +88,7 @@
               .after('<span class="ghx-assigned-work-stats"><img class="ghx-avatar-img" src="' + object['avatar'] + '"></span>');
           });
         });
-      }); */
+      }); 
     }
   };
 
