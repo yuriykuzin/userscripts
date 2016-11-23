@@ -3,7 +3,7 @@
 // @namespace   jira-agile
 // @description Add avatar of assigned person to Work View
 // @include     https://*.atlassian.net/secure/RapidBoard.jspa*
-// @version     1.0.19
+// @version     1.1.0
 // @author      Stepan Suvorov <stevermeister@gmail.com>
 // ==/UserScript==
 
@@ -11,7 +11,7 @@
   var script = function() {
     function getColor(component) {
       function hashCode(s){
-        return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
+        return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a;},0);
       }
  
       function intToRGB(i){
@@ -33,28 +33,43 @@
     });
 
     function getData() {
-      return jQuery.get('/rest/greenhopper/1.0/xboard/work/allData.json?rapidViewId=3');
+      // return jQuery.get('/rest/greenhopper/1.0/xboard/plan/backlog/data.json?rapidViewId=3&selectedProjectKey=SEA');
+      return Promise.all([
+        fetch('https://studytube.atlassian.net/rest/agile/1.0/board/3/sprint?state=future,active&maxResults=1000', { mode: 'cors', credentials: 'include' })
+          .then(function(data) {
+            return data.json().then(function(sprints) {
+              return Promise.all(sprints.values.map(function(sprint) {
+                return fetch(sprint.self + '/issue?maxResults=1000&fields=key,components', { mode: 'cors', credentials: 'include' })
+                  .then(function(data) {
+                    return data.json();
+                  }).then(function(data) {
+                    return data.issues;
+                  });
+              }));
+            });
+          }),
+
+        fetch('https://studytube.atlassian.net/rest/agile/1.0/board/3/backlog?maxResults=1000&fields=key,components', { mode: 'cors', credentials: 'include' })
+          .then(function(data) {
+            return data.json();
+          }).then(function(data) {
+            return data.issues;
+          })
+      ]).then(function(results) {
+        return results[0].reduce(function(a, b) { return a.concat(b) }).concat(results[1]);
+      });
     }
 
     function setLabels() {
       jQuery(function($) {
-        getData().then(function(data) {
-          var issues = data.issuesData.issues;
-          // Normalize components
-          issues.forEach(function(issue) {
-            var componentsField = issue.extraFields.filter(function (field) {
-              return field.id === 'components';
-            })[0];
-
-            issue.components = componentsField && componentsField.text ? componentsField.text.split(',').map(function(c) { return c.trim() }) : [];
-          });
+        getData().then(function(issues) {
 
           issues.forEach(function(issue) {
-            issue.components.forEach(function(component) {
-              $('div[data-issue-key="' + issue.key + '"] .ghx-end.ghx-row').prepend(
+            issue.fields.components.forEach(function(component) {
+              $('.js-issue[data-issue-key="' + issue.key + '"] .ghx-end.ghx-row').prepend(
                 $('<span class="aui-label own-label ghx-label ghx-label-single" />')
-                  .css({ 'backgroundColor': getColor(component), 'borderColor': 'rgba(0,0,0,0.2)', 'color': '#fff' })
-                  .text(component)
+                  .css({ 'backgroundColor': getColor(component.name), 'borderColor': 'rgba(0,0,0,0.2)', 'color': '#fff' })
+                  .text(component.name)
               );
             });
           });
