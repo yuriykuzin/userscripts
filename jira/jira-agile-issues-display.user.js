@@ -3,7 +3,7 @@
 // @namespace   jira-agile
 // @description Add avatar of assigned person to Work View
 // @include     https://*.atlassian.net/secure/RapidBoard.jspa*
-// @version     1.1.0
+// @version     1.1.1
 // @author      Stepan Suvorov <stevermeister@gmail.com>
 // ==/UserScript==
 
@@ -13,7 +13,7 @@
       function hashCode(s){
         return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a;},0);
       }
- 
+
       function intToRGB(i){
         var c = (i & 0x00FFFFFF)
           .toString(16)
@@ -112,8 +112,19 @@
       return;
     }
 
-    var script = document.createElement('script');
-    script.textContent = '(' + callback.toString() + ')();';
-    document.body.appendChild(script);
+    function runScript() {
+      var script = document.createElement('script');
+      script.textContent = '(' + callback.toString() + ')();';
+      document.body.appendChild(script);
+    }
+
+    if (!window.fetch) {
+      var script = document.createElement('script');
+      script.src = 'https://raw.githubusercontent.com/github/fetch/master/fetch.js';
+      document.body.appendChild(script);
+      script.onload = runScript;
+    } else {
+      runScript();
+    }
   }(script));
 }());
