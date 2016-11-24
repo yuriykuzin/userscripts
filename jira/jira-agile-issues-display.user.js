@@ -3,7 +3,7 @@
 // @namespace   jira-agile
 // @description Add avatar of assigned person to Work View
 // @include     https://*.atlassian.net/secure/RapidBoard.jspa*
-// @version     1.1.1
+// @version     1.2.0
 // @author      Stepan Suvorov <stevermeister@gmail.com>
 // ==/UserScript==
 
@@ -26,11 +26,11 @@
       return '#' + intToRGB(hashCode(component) * 232 + 1000);
     }
 
-    //setAvatars();
+    setAvatars();
 
-    setTimeout(function() {
+    jQuery('#work-toggle').click(function() {
       setAvatars();
-    }, 1000);
+    });
 
     function getData() {
       // return jQuery.get('/rest/greenhopper/1.0/xboard/plan/backlog/data.json?rapidViewId=3&selectedProjectKey=SEA');
@@ -39,7 +39,7 @@
           .then(function(data) {
             return data.json().then(function(sprints) {
               return Promise.all(sprints.values.map(function(sprint) {
-                return fetch(sprint.self + '/issue?maxResults=1000&fields=key,components', { mode: 'cors', credentials: 'include' })
+                return fetch(sprint.self + '/issue?maxResults=1000&fields=key,components,subtasks,assignee', { mode: 'cors', credentials: 'include' })
                   .then(function(data) {
                     return data.json();
                   }).then(function(data) {
@@ -49,14 +49,14 @@
             });
           }),
 
-        fetch('https://studytube.atlassian.net/rest/agile/1.0/board/3/backlog?maxResults=1000&fields=key,components', { mode: 'cors', credentials: 'include' })
+        fetch('https://studytube.atlassian.net/rest/agile/1.0/board/3/backlog?maxResults=1000&fields=key,components,subtasks,assignee', { mode: 'cors', credentials: 'include' })
           .then(function(data) {
             return data.json();
           }).then(function(data) {
-            return data.issues;
-          })
+          return data.issues;
+        })
       ]).then(function(results) {
-        return results[0].reduce(function(a, b) { return a.concat(b) }).concat(results[1]);
+        return results[0].reduce(function(a, b) { return a.concat(b); }).concat(results[1]);
       });
     }
 
@@ -65,12 +65,32 @@
         getData().then(function(issues) {
 
           issues.forEach(function(issue) {
-            issue.fields.components.forEach(function(component) {
-              $('.js-issue[data-issue-key="' + issue.key + '"] .ghx-end.ghx-row').prepend(
-                $('<span class="aui-label own-label ghx-label ghx-label-single" />')
-                  .css({ 'backgroundColor': getColor(component.name), 'borderColor': 'rgba(0,0,0,0.2)', 'color': '#fff' })
-                  .text(component.name)
-              );
+            jQuery('.js-issue[data-issue-key="' + issue.key + '"] .ghx-end.ghx-row').each(function(index, issueRow) {
+              issue.fields.components.forEach(function(component) {
+                jQuery(issueRow).prepend(
+                  jQuery('<span class="aui-label own-label ghx-label ghx-label-single" />')
+                    .css({ 'backgroundColor': getColor(component.name), 'borderColor': 'rgba(0,0,0,0.2)', 'color': '#fff' })
+                    .text(component.name)
+                );
+              });
+
+              var avatarContainer = jQuery(issueRow).find('.ghx-end');
+
+              var assignees = [];
+              if (issue.fields.assignee) {
+                assignees.push(issue.fields.assignee.key);
+              }
+
+              for (var i = 0; i < issue.fields.subtasks.length; i++) {
+                fetch(issue.fields.subtasks[i].self + '?fields=assignee', { mode: 'cors', credentials: 'include' })
+                  .then(function(data) { return data.json(); })
+                  .then(function(issueData) {
+                    if (issueData.fields.assignee && assignees.indexOf(issueData.fields.assignee.key) === -1) {
+                      assignees.push(issueData.fields.assignee.key);
+                      avatarContainer.prepend('<img src="' + issueData.fields.assignee.avatarUrls['16x16'] + '" width="16" height="16" style="vertical-align: top; margin-right: 3px;">');
+                    }
+                  });
+              }
             });
           });
         });
@@ -86,24 +106,24 @@
     }, 10);
 
     function setAvatars(){
-      jQuery(function($) {
-        getData().then(function(data) {
-          var avatars = data.issuesData.issues.map(function(el) {
-            return {
-              key: el.key,
-              avatar: el.avatarUrl
-            }
-          });
+      /*jQuery(function($) {
+       getData().then(function(issues) {
+       var avatars = issues.map(function(el) {
+       return {
+       key: el.key,
+       avatar: el.avatarUrl
+       }
+       });
 
-          $.each(avatars, function(index, object) {
-            if (!object['avatar']) {
-              return;
-            }
-            $('div[data-issue-key="' + object['key'] + '"] .ghx-parent-key')
-              .after('<span class="ghx-assigned-work-stats"><img class="ghx-avatar-img" src="' + object['avatar'] + '"></span>');
-          });
-        });
-      }); 
+       $.each(avatars, function(index, object) {
+       if (!object['avatar']) {
+       return;
+       }
+       $('div[data-issue-key="' + object['key'] + '"] .ghx-parent-key')
+       .after('<span class="ghx-assigned-work-stats"><img class="ghx-avatar-img" src="' + object['avatar'] + '"></span>');
+       });
+       });
+       });*/
     }
   };
 
