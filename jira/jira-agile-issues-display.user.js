@@ -11,9 +11,9 @@
   var script = function() {
     function getColor(component) {
       function hashCode(s){
-        return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
+        return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a;},0);
       }
- 
+
       function intToRGB(i){
         var c = (i & 0x00FFFFFF)
           .toString(16)
@@ -62,16 +62,7 @@
 
     function setLabels() {
       jQuery(function($) {
-        getData().then(function(data) {
-          var issues = data.issuesData.issues;
-          // Normalize components
-          issues.forEach(function(issue) {
-            var componentsField = issue.extraFields.filter(function (field) {
-              return field.id === 'components';
-            })[0];
-
-            issue.components = componentsField && componentsField.text ? componentsField.text.split(',').map(function(c) { return c.trim() }) : [];
-          });
+        getData().then(function(issues) {
 
           issues.forEach(function(issue) {
             jQuery('.js-issue[data-issue-key="' + issue.key + '"] .ghx-end.ghx-row').each(function(index, issueRow) {
@@ -141,8 +132,19 @@
       return;
     }
 
-    var script = document.createElement('script');
-    script.textContent = '(' + callback.toString() + ')();';
-    document.body.appendChild(script);
+    function runScript() {
+      var script = document.createElement('script');
+      script.textContent = '(' + callback.toString() + ')();';
+      document.body.appendChild(script);
+    }
+
+    if (!window.fetch) {
+      var script = document.createElement('script');
+      script.src = 'https://raw.githubusercontent.com/github/fetch/master/fetch.js';
+      document.body.appendChild(script);
+      script.onload = runScript;
+    } else {
+      runScript();
+    }
   }(script));
 }());
